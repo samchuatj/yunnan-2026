@@ -112,7 +112,7 @@ a.link{display:inline-block;margin-top:4px;padding:6px 12px;border-radius:8px;ba
 .spot:first-of-type{border-top:0}
 .spot .n{min-width:0;overflow-wrap:anywhere}
 .spot small{display:block;color:var(--muted);font-size:12.5px}
-.spot .acts{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:150px}
+.spot .acts{flex:0 0 auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:170px}
 .spot a,.spot button{font:600 13px var(--f-body);color:var(--accent);text-decoration:none;padding:6px 10px;border-radius:8px;background:var(--accent-soft);border:0}
 .spot a.web,.spot button{background:transparent;border:1px solid var(--line);color:var(--muted)}
 .note{font-size:12px;color:var(--muted);margin:8px 2px 0}
@@ -225,9 +225,6 @@ var F=[["Yunnan",[["Mushroom Hotpot","Yes"],["Steam Pot Chicken","Yes"],["Cured 
 ["Shangri-la",[["Yak Meat Hotpot",""],["Butter Tea","Yes"],["Tibetan Momos",""],["Yak Yoghurt / Ice Cream",""]]]];
 
 var S=[["21–23 Nov", "2 nights", "Kunming", "Atour Hotel Kunming Nanping", "No. 1 Dongfeng West Road, Wuhua District, Kunming", "昆明五華區東風西路1號 昆明南屏步行街老街亞朵酒店", "", "Sat 21 Nov, after 14:00 (you land 2am on 22nd)", "Mon 23 Nov, before 12:00", "Superior Queen, breakfast for 2", "", "", ""], ["23–24 Nov", "1 night", "Dali · S Bay", "Dali Mujing · Haiyue Seaview Homestay", "No. 151, Village Group 5, Shiling Villagers Committee, Daningyi, Wanqiao Town, Dali", "灣橋鎮大寧邑石嶺村委會5社151號, 大理市", "", "Mon 23 Nov, 14:00 to 01:00", "Tue 24 Nov, before 12:00", "270° Sea-View Queen, breakfast for 2", "", "", "Welcome snacks, afternoon tea for 2, Jiama rubbing, CNY20 dining voucher"], ["24–25 Nov", "1 night", "Dali", "Not booked in Drive", "", "", "", "", "", "", "", "", "No confirmation in the Accoms folder. Only a Trip.com search link existed. Check this one."], ["25–27 Nov", "2 nights", "Lijiang Old Town", "Meiluolanting, Lijiang (Mu Fu branch)", "No. 8, Guanyuan Lane, Guangyi Street, Gucheng District, Lijiang", "光義街官院巷8號, 古城區, 麗江", "", "Wed 25 Nov, after 14:00", "Fri 27 Nov, before 13:00", "Double Bed, breakfast for 2", "", "", "Pu'er tea tasting, old town luggage transfer both ways, butler service"], ["27–28 Nov", "1 night", "Tiger Leaping Gorge", "MoYe Snow Mountain Cliff Hotel", "Beside Shenchuan Bridge, Dashengou, Bendiwan Village Group, Hutiaoxia Town, Shangri-La", "虎跳峽鎮永勝村委會本地灣組大深溝神川大橋旁, 香格里拉", "", "Fri 27 Nov, after 14:00", "Sat 28 Nov, before 12:00", "Ink Scene Cloud Dream King Bed, breakfast for 2", "", "", "Non-refundable"], ["28 Nov–1 Dec", "3 nights", "Shangri-la · Napa Lake", "MuKa Pastoral Manor", "No. 46, Xiaxue Village Group, Jiefang Villagers Committee, Jiantang Town, Shangri-La", "建塘鎮解放村委會夏學組46號, 香格里拉", "", "Sat 28 Nov, after 14:00", "Tue 1 Dec, before 14:00 (late check-out)", "Prairie Scenic King Bed, breakfast for 2", "", "", "Station pick-up or drop-off, bonfire party, tea culture, butter tea and tsampa, Tibetan costume photos, daily afternoon tea. Cancel fee S$139.37 after 18:00 on 28 Nov"]];
-var UA=navigator.userAgent||"";
-function amapApp(k){var e=encodeURIComponent(k);
-  return /Android/i.test(UA)?"androidamap://poi?sourceApplication=yunnan&keywords="+e:"iosamap://poi?sourceApplication=yunnan&name="+e}
 document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-cp]");if(!b)return;var isB=b.tagName==="BUTTON";
   var t=b.getAttribute("data-cp");function ok(){if(!isB)return;b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1500)}
   try{navigator.clipboard.writeText(t).then(ok,function(){sel(b,t)})}catch(e){sel(b,t)}});
@@ -267,13 +264,13 @@ document.getElementById("stay").innerHTML=S.map(function(r){
    +(r[11]?'<a class="link" href="'+r[11]+'" target="_blank" rel="noopener">Open booking PDF</a>':'')+'</article>'}).join("");
 (function(){
   var el=document.getElementById("map");
-  el.innerHTML='<div class="cities" id="cities"></div><div class="food-g" id="spots"></div><p class="note">Open Amap copies the Chinese name and then tries to launch the app. This page runs inside a sandbox that often blocks app links, so if Amap does not open, open it yourself and paste the name into the search box. Web opens the Amap page, which has an open-in-app button.</p>';
+  el.innerHTML='<div class="cities" id="cities"></div><div class="food-g" id="spots"></div><p class="note">Apple Maps opens the Maps app on an iPhone. Chinese names search best. If a search misses, tap Copy and paste the name into the search box.</p>';
   var cb=document.getElementById("cities");
   function pick(k){
     C.forEach(function(c){document.getElementById("c-"+c.k).setAttribute("aria-pressed",c.k===k)});
     var c=C.filter(function(x){return x.k===k})[0];
     document.getElementById("spots").innerHTML='<h2>'+c.n+' <span style="font:500 13px var(--f-body);color:var(--muted)">'+c.d+'</span></h2>'+c.s.map(function(r){
-      return'<div class="spot"><span class="n">'+esc(r[0])+'<small>'+esc(r[2])+'</small></span><span class="acts"><a href="'+amapApp(r[1])+'" data-cp="'+esc(r[1])+'">Open Amap</a><button type="button" data-cp="'+esc(r[1])+'">Copy</button><a class="web" href="https://uri.amap.com/search?keyword='+encodeURIComponent(r[1])+'" target="_blank" rel="noopener">Web</a></span></div>'}).join("")}
+      return'<div class="spot"><span class="n">'+esc(r[0])+'<small>'+esc(r[2])+'</small></span><span class="acts"><a href="https://maps.apple.com/?q='+encodeURIComponent(r[1])+'" target="_blank" rel="noopener">Apple Maps</a><button type="button" data-cp="'+esc(r[1])+'">Copy</button></span></div>'}).join("")}
   C.forEach(function(c){var b=document.createElement("button");b.id="c-"+c.k;b.textContent=c.n;b.onclick=function(){pick(c.k)};cb.appendChild(b)});
   pick("kmg");
 })();
