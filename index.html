@@ -103,7 +103,18 @@ a.link{display:inline-block;margin-top:4px;padding:6px 12px;border-radius:8px;ba
 .stay-c .when{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
 .stay-c h2{font:700 17px/1.25 var(--f-display);margin:0}
 .stay-c .city{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin:0 0 6px}
-.tabs button{padding-inline:4px}
+.tabs button{padding-inline:2px;font-size:13px}
+.wxwrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;margin-top:10px}
+table.wx{border-collapse:collapse;width:100%;min-width:340px;font-size:12.5px;font-variant-numeric:tabular-nums}
+.wx th{font:600 11px var(--f-body);color:var(--muted);text-align:center;padding:8px 2px;position:sticky;top:0;background:var(--card)}
+.wx th small{display:block;font-weight:400;font-size:10px}
+.wx td{text-align:center;padding:6px 2px;border-top:1px solid var(--line);line-height:1.2}
+.wx td:first-child,.wx th:first-child{text-align:left;padding-left:10px;white-space:nowrap}
+.wx td small{display:block;font-size:10.5px;color:var(--muted)}
+.wx td small.r{color:var(--accent);font-weight:700}
+.wx tr.trip td{background:var(--accent-soft)}
+.wx tr.now td{box-shadow:inset 0 -2px 0 var(--today)}
+.wx td b{font-weight:700}
 .cities{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:10px}
 .cities::-webkit-scrollbar{display:none}
 .cities button{flex:0 0 auto;font:600 13px var(--f-body);padding:7px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
@@ -134,6 +145,7 @@ html{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
     <button id="tab-map" aria-pressed="false">Places</button>
     <button id="tab-stay" aria-pressed="false">Stays</button>
     <button id="tab-food" aria-pressed="false">Food</button>
+    <button id="tab-wx" aria-pressed="false">Weather</button>
   </div>
   <nav class="strip" id="strip" aria-label="Jump to day"></nav>
 </div>
@@ -141,6 +153,7 @@ html{padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}
 <section id="map" hidden></section>
 <section id="stay" hidden></section>
 <section id="food" hidden></section>
+<section id="wx" hidden></section>
 </main>
 
 <script>
@@ -229,6 +242,24 @@ document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.targe
   try{navigator.clipboard.writeText(t).then(ok,function(){sel(b,t)})}catch(e){sel(b,t)}});
 function sel(b,t){var i=document.createElement("input");i.value=t;document.body.appendChild(i);i.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(i);if(b.tagName==="BUTTON"){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1500)}}
 var C=[{"k": "kmg", "n": "Kunming", "d": "22–23 Nov, 1–2 Dec", "lat": 25.04, "lon": 102.71, "s": [["Atour Hotel Kunming Nanping", "昆明南屏步行街老街亚朵酒店", "Hotel · 22–23 Nov"], ["Jingde Alley and Xunjin Street", "景德巷 巡津街", "22 Nov morning"], ["Aocheng Mansion Block A", "傲城大厦A座", "Photo spot"], ["Kunming Old Street", "昆明老街", "Late lunch"], ["Ruo'an Duiyuelou Boutique Hotel", "若安·对月楼精品酒店", "Photo spot"], ["Nanping Pedestrian Street", "南屏步行街", "Minisoland, evening"], ["Nanqiang Street", "南强街巷", "Dinner"], ["Kunming Changshui Airport", "昆明长水国际机场", "Land 2am 22 Nov, fly 3am 2 Dec"], ["Spa 水境·绮愈 (city assumed Kunming)", "水境·绮愈 昆明", "Night of 1 Dec, before the flight"]]}, {"k": "dali", "n": "Dali", "d": "23–24 Nov", "lat": 25.69, "lon": 100.16, "s": [["Dali Mujing · Haiyue Seaview Homestay", "大理沐境·海粤海景度假民宿 S湾生态廊道店", "Hotel · 23 Nov"], ["Xizhou Ancient Town", "喜洲古镇", "23 Nov · Bai houses, paddy fields, tea ceremony"], ["S Bay Ecological Corridor", "洱海生态廊道 S湾", "24 Nov · sunrise and scooter"], ["Dali Ancient Town", "大理古城", "24 Nov · dinner: sour and spicy fish"], ["Dali Railway Station", "大理站", "Arrive 23 Nov"]]}, {"k": "lj", "n": "Lijiang", "d": "25–26 Nov", "lat": 26.87, "lon": 100.23, "s": [["Meiluolanting Homestay", "梅洛兰亭 官院巷8号 丽江", "Hotel · 25–27 Nov"], ["Baisha Ancient Town", "白沙古镇", "25 Nov · Yun Tian Cafe"], ["Dayan Old Town", "大研古城", "25 Nov · dinner"], ["Jade Dragon Snow Mountain Glacier Park", "玉龙雪山 冰川公园大索道", "26 Nov · pickup 5:30–6am"], ["Blue Moon Valley", "蓝月谷", "26 Nov"], ["Impression Lijiang", "印象丽江", "26 Nov"], ["Shuhe Ancient Town", "束河古镇", "26 Nov · maybe"]]}, {"k": "tlg", "n": "Tiger Leaping Gorge", "d": "27 Nov", "lat": 27.19, "lon": 100.1, "s": [["Tea Horse Guesthouse, Tiger Leaping Gorge", "茶马客栈 虎跳峡", "27 Nov · hike starts here"], ["Halfway Guesthouse, Tiger Leaping Gorge", "中途客栈 虎跳峡", "Hike checkpoint"], ["Tina's Guesthouse, Tiger Leaping Gorge", "天梯客栈 Tina's 虎跳峡", "Hike checkpoint"], ["Zhang's Guesthouse, Tiger Leaping Gorge", "张老师客栈 虎跳峡", "Hike ends, driver to Moye"], ["MoYe Snow Mountain Cliff Hotel", "墨野雪山悬崖酒店 虎跳峡", "Hotel · 27 Nov"]]}, {"k": "sgl", "n": "Shangri-la", "d": "28 Nov–1 Dec", "lat": 27.82, "lon": 99.7, "s": [["MuKa Pastoral Manor, Napa Lake", "牧卡拾光隐世度假庄园 纳帕海店", "Hotel · 28 Nov to 1 Dec"], ["Napa Lake", "纳帕海", "28 Nov · scooter, prayer flags, Heidou cafe"], ["Ganden Sumtseling Monastery", "松赞林寺", "29 Nov"], ["Dukezong Ancient Town", "独克宗古城", "29–30 Nov · yak dinner, bus to Balagezong"], ["Guishan Park Giant Golden Prayer Wheel", "龟山公园 大转经筒", "29 Nov"], ["Balagezong Scenic Area", "巴拉格宗景区", "30 Nov · Echo Wall, Shambhala Stupa, Grand Canyon"]]}];
+var WX={"asof":"15 Nov","dates":["2026-11-15","2026-11-16","2026-11-17","2026-11-18","2026-11-19","2026-11-20","2026-11-21","2026-11-22","2026-11-23","2026-11-24","2026-11-25","2026-11-26","2026-11-27","2026-11-28","2026-11-29","2026-11-30"],"t":[[18,20,20,17,19,15,16,20,21,16,15,17,17,16,17,16],[16,18,18,20,19,19,20,19,21,19,15,17,18,18,18,17],[19,19,19,19,20,18,19,19,19,18,15,17,17,17,17,15],[15,16,16,17,17,16,17,16,17,15,13,15,16,15,15,13],[11,9,11,11,12,12,13,12,12,8,11,11,11,11,11,9]],"n":[[6,7,8,7,7,7,9,12,12,9,7,4,4,4,4,10],[7,7,8,8,8,9,9,10,10,10,9,8,8,9,6,4],[1,4,5,2,3,4,4,6,7,5,3,2,2,2,2,-1],[0,0,2,0,1,1,1,2,3,1,0,-1,0,0,-1,0],[-4,-3,-2,-3,-3,-3,-2,-2,-2,-2,-4,-4,-4,-4,-4,-5]],"p":[[0,0,0,27,18,45,41,27,16,31,20,8,4,10,24,16],[0,0,0,2,5,8,5,8,15,14,19,6,3,5,11,10],[0,0,2,33,2,8,2,0,6,29,24,4,4,5,7,12],[0,0,2,0,4,6,2,3,10,33,13,3,2,4,7,12],[0,2,4,0,4,6,4,5,12,20,17,6,1,8,11,13]]};
+var WL=[["Kunming","1900m"],["Dali","2040m"],["Lijiang","2400m"],["Gorge","2650m"],["Shangri-la","3300m"]];
+var WD={"2026-11-22":0,"2026-11-23":1,"2026-11-24":1,"2026-11-25":2,"2026-11-26":2,"2026-11-27":3,"2026-11-28":4,"2026-11-29":4,"2026-11-30":4,"2026-12-01":0,"2026-12-02":0};
+var WN=["Kunming","Dali","Dali","Lijiang","Lijiang","Tiger Leaping Gorge","Shangri-la","Shangri-la","Shangri-la","Kunming","Kunming"];
+function wxPill(iso){var li=WD[iso];if(li===undefined)return"";var i=WX.dates.indexOf(iso);if(i<0)return"";
+  return'<span class="pill" data-wx="'+iso+'">'+esc(WL[li][0])+' '+WX.n[li][i]+' to '+WX.t[li][i]+'° · rain '+WX.p[li][i]+'%</span>'}
+function wxRefresh(){document.querySelectorAll("[data-wx]").forEach(function(e){var h=wxPill(e.getAttribute("data-wx"));if(h){var t=document.createElement("div");t.innerHTML=h;e.textContent=t.firstChild.textContent}})}
+function wxRender(){
+  var DN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var h='<div class="wxwrap"><table class="wx"><thead><tr><th>Date</th>'+WL.map(function(l){return'<th>'+l[0]+'<small>'+l[1]+'</small></th>'}).join("")+'</tr></thead><tbody>';
+  WX.dates.forEach(function(d,i){var dt=new Date(d+"T00:00:00Z"),trip=d>="2026-11-21"&&d<="2026-12-02";
+    h+='<tr class="'+(trip?"trip":"")+(d===today?" now":"")+'"><td>'+DN[dt.getUTCDay()]+" "+dt.getUTCDate()+" "+MN[dt.getUTCMonth()]+'</td>'+WL.map(function(l,j){var p=WX.p[j][i];
+      return'<td><b>'+WX.t[j][i]+'°</b>/'+WX.n[j][i]+'°<small class="'+(p>=50?"r":"")+'">'+p+'%</small></td>'}).join("")+'</tr>'});
+  h+='</tbody></table></div><p class="note">Daily high / low in °C, with the chance of rain underneath. Shaded rows are trip days. '+(WX.live?"Live forecast, refreshed when you opened this page.":"Snapshot from "+WX.asof+".")+' It covers the town centres. Mountain stops such as Jade Dragon Snow Mountain and Balagezong will be colder. Dates after the last row are not forecast yet. Source: Open-Meteo.</p>';
+  document.getElementById("wx").innerHTML=h}
+function wxLive(){try{fetch("https://api.open-meteo.com/v1/forecast?latitude=25.04,25.69,26.87,27.19,27.82&longitude=102.71,100.16,100.23,100.10,99.70&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=16&timezone=Asia%2FShanghai").then(function(r){return r.json()}).then(function(a){
+  if(!a||a.length!==5)return;WX={asof:"live",live:true,dates:a[0].daily.time,t:a.map(function(x){return x.daily.temperature_2m_max.map(Math.round)}),n:a.map(function(x){return x.daily.temperature_2m_min.map(Math.round)}),p:a.map(function(x){return x.daily.precipitation_probability_max})};
+  wxRender();wxRefresh()}).catch(function(){})}catch(e){}}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function lin(s){var e=esc(s);return e.replace(/(https?:\/\/[^\s]+)/g,'<a class="link" href="$1" target="_blank" rel="noopener">Open link</a>')}
 function iso(){var n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0")}
@@ -240,7 +271,7 @@ D.forEach(function(x,i){
   a.onclick=function(e){e.preventDefault();var el=document.getElementById("day-"+x.d);open(el,true);el.scrollIntoView({behavior:"smooth"})};
   strip.appendChild(a);
   var h='<button aria-expanded="false"><div class="date"><b>'+x.date+'</b><span>'+x.dow+'</span></div><div class="head"><div class="area">'+esc(x.area)+'</div><div class="meta">'
-   +(isT?'<span class="pill t">Today</span>':'')+(x.time?'<span class="pill">'+esc(x.time)+'</span>':'')
+   +(isT?'<span class="pill t">Today</span>':'')+(x.time?'<span class="pill">'+esc(x.time)+'</span>':'')+wxPill(x.d)
    +'</div></div><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button><div class="body">';
   h+='<div class="sec"><h3>Plan</h3><ul>'+x.acts.map(function(t){return t.indexOf("T:")===0?'<li class="time">'+esc(t.slice(2))+'</li>':'<li>'+lin(t)+'</li>'}).join("")+'</ul></div>';
   if(x.travel)h+='<div class="sec"><h3>Travel</h3><ul>'+x.travel.map(function(t){return'<li>'+lin(t)+'</li>'}).join("")+'</ul></div>';
@@ -274,11 +305,12 @@ document.getElementById("stay").innerHTML=S.map(function(r){
   pick("kmg");
 })();
 function tab(n){
-  ["plan","map","stay","food"].forEach(function(k){document.getElementById(k).hidden=k!==n;document.getElementById("tab-"+k).setAttribute("aria-pressed",k===n)});
+  ["plan","map","stay","food","wx"].forEach(function(k){document.getElementById(k).hidden=k!==n;document.getElementById("tab-"+k).setAttribute("aria-pressed",k===n)});
   document.getElementById("strip").hidden=n!=="plan"}
 function tabOld(p){document.getElementById("plan").hidden=!p;document.getElementById("strip").hidden=!p;document.getElementById("food").hidden=p;
   document.getElementById("tab-plan").setAttribute("aria-pressed",p);document.getElementById("tab-food").setAttribute("aria-pressed",!p)}
-["plan","map","stay","food"].forEach(function(k){document.getElementById("tab-"+k).onclick=function(){tab(k)}});
+["plan","map","stay","food","wx"].forEach(function(k){document.getElementById("tab-"+k).onclick=function(){tab(k)}});
+wxRender();wxLive();
 var f=document.getElementById("day-"+(focus||D[0].d));
 open(f,true);
 if(focus)setTimeout(function(){f.scrollIntoView()},50);
